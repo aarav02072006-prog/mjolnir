@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String   @default("")
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model Product {
+  id                 String  @id @default(uuid())
+  productId          String  @unique // MEESHO_1000000
+  title              String
+  category           String
+  subcategory        String
+  brand              String
+  originalPrice      Float
+  discountedPrice    Float
+  discountPercentage Float
+  rating             Float
+  reviewCount        Int
+  availability       String
+  stockCount         Int     @default(10)
+  sellerName         String
+  imageUrl           String
+  productUrl         String
+  description        String
+  colorsAvailable    String
+  sizesAvailable     String
+  material           String
+  codAvailable       Boolean
+  returnPolicy       String
+  deliveryTime       String
+
+  orderItems         OrderItem[]
+  flashLocks         FlashCheckoutLock[]
+  priceHistory       PriceHistory[]
+
+  @@index([category])
+  @@index([availability])
+  @@index([discountedPrice])
+  @@index([rating])
+  @@index([title])
+}
+
+model PriceHistory {
+  id         String   @id @default(uuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  price      Float
+  recordedAt DateTime @default(now())
+  isSimulated Boolean @default(false)
+
+  @@index([productId])
+}
+
+model Order {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  total             Float
+  status            String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  reservationId     String?  // for idempotency
+  razorpayOrderId   String?  @unique
+  razorpayPaymentId String?  @unique
+  createdAt         DateTime @default(now())
+
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+model FlashCheckoutLock {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    String
+  quantity  Int
+  lockedAt  DateTime @default(now())
+  expiresAt DateTime
+}

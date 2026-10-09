@@ -1,0 +1,9 @@
+.btn,.button{background:var(--dark);color:#fff;border:none;padding:10px 14px;border-radius:4px;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper button{width:36px;height:36px}
+.price{font-weight:700}
+.mrp{text-decoration:line-through;color:var(--muted);margin-left:8px}
+.off{color:#059669;margin-left:8px}
+.card{border:1px solid var(--border);border-radius:var(--radius);padding:var(--space)}
+.badge{background:var(--dark);color:#fff;border-radius:999px;padding:2px 6px;margin-left:4px}
